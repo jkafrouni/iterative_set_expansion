@@ -1,0 +1,4 @@
+__pycache__
+*.pyc
+config.py
+logs/feedback_search.log
