@@ -8,7 +8,7 @@ from multiprocessing.dummy import Pool as ThreadPool
 from bs4 import BeautifulSoup
 from tests import mock_query_and_scraping
 
-logger = logging.getLogger('feedback_search')
+logger = logging.getLogger('iterative_set_expansion')
 
 
 def scrape(url):

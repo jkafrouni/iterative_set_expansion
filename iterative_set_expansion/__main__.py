@@ -20,6 +20,7 @@ from iterative_set_expansion import helpers
 from iterative_set_expansion import query
 from iterative_set_expansion import scrape
 from iterative_set_expansion import preprocess
+from iterative_set_expansion import annotate
 
 
 logger = logging.getLogger('iterative_set_expansion')
@@ -59,6 +60,7 @@ def main(is_test=False):
     helpers.print_arguments(r, t, q, k)
 
     X = dict() # extracted tuples
+    annotator = annotate.Annotator()
 
     iteration_number = 0
     while len(X) < k:
@@ -68,7 +70,11 @@ def main(is_test=False):
         results = query.query_google(q) # TODO: garder juste les URLs ?
         scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
 
-        
+        for result in results:
+            result['preprocessed_content'] = preprocess.split_sentences((result['content']))
+
+        annotator.annotate_results(results, r)
+
         break
           
 

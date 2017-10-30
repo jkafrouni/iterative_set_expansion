@@ -41,3 +41,7 @@ def print_arguments(r, t, q, k):
     print('Threshold \t =', t)
     print('Query \t\t =', q)
     print('# of Tuples \t =', k)
+
+def any_two(iterable):
+    """Similar to the built-in function any except it retains True if and iterable is True (at least) twice (and not only once)"""
+    return (len([i for i in iterable if i]) > 1)
