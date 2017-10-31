@@ -21,7 +21,9 @@ from iterative_set_expansion import query
 from iterative_set_expansion import scrape
 from iterative_set_expansion import preprocess
 from iterative_set_expansion import annotate
-
+from iterative_set_expansion import extract
+from iterative_set_expansion import relation_set
+from tests import mock_query_and_scraping
 
 logger = logging.getLogger('iterative_set_expansion')
 logger.propagate = False # do not log in console
@@ -35,11 +37,11 @@ logger.addHandler(handler)
 logger.setLevel(logging.DEBUG)
 
 
-def main(is_test=False):
+def main(is_test=True):
     """
     Main routine, 
     Inputs:
-        r: int between 0 and 4, for categories Live_In (1), Located_In (2), OrgBased_In (3), Work_For (4)
+        r: int between 1 and 4, for categories Live_In (1), Located_In (2), OrgBased_In (3), Work_For (4)
         t: float between 0 and 1, extraction confidence threshold
         q: string, seed query of plausible tuple
         k: int greater than 0, number of tuples wanted
@@ -59,22 +61,31 @@ def main(is_test=False):
 
     helpers.print_arguments(r, t, q, k)
 
-    X = dict() # extracted tuples
+    X = relation_set.RelationSet(r) # extracted tuples
     annotator = annotate.Annotator()
+    extractor = extract.Extractor(r, t)
 
     iteration_number = 0
     while len(X) < k:
         iteration_number += 1
         print('=========== Iteration: %s - Query: %s ===========' %(iteration_number, q))
 
-        results = query.query_google(q) # TODO: garder juste les URLs ?
-        scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
+        # results = query.query_google(q) # TODO: garder juste les URLs ?
+        # scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
+        results = mock_query_and_scraping.load_query_results(q) # for tests
 
         for result in results:
             result['preprocessed_content'] = preprocess.split_sentences((result['content']))
 
-        annotator.annotate_results(results, r)
+        annotator.annotate_results(results, r) # updates the list of results
+        extracted_tuples = extractor.extract_from_results(results)
 
+        print(extracted_tuples)
+
+        for extracted_tuple in extracted_tuples:
+            X.add(extracted_tuple)
+
+        print('X : ', X)
         break
           
 
