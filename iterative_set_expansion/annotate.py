@@ -24,11 +24,7 @@ class Annotator:
                 "ner.useSUTime": "0"
             }
         }
-
-    def annotate(self, text, pipeline='first_pipeline'):
-        client = NLPCoreClient(PATH_TO_CORENLP)
-        doc = client.annotate(text=text, properties=self.properties[pipeline])
-        return doc
+        self.core_client = NLPCoreClient(PATH_TO_CORENLP)
 
     def select_sentences(self, text, relation, doc):
         """
@@ -60,22 +56,24 @@ class Annotator:
                     sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
         return sentences_with_entities
 
+
+    def annotate(self, text, pipeline='first_pipeline', doc_id=''):
+        print('here ' + str(doc_id))
+        logger.info('[ANNOTATOR]\t [doc %s] Annotating %s sentences ... (%s)', doc_id, len(text), pipeline)
+        doc = self.core_client.annotate(text=text, properties=self.properties[pipeline], doc_id=doc_id)
+        logger.info('[ANNOTATOR]\t [doc %s] %s done', doc_id, pipeline)
+        return doc
+
     def run_both_pipelines(self, result, relation):
         if result['preprocessed_content']:
-            logger.info('[ANNOTATOR]\t [%s] Annotating %s sentences ... (First pipeline)', result['url'], len(result['preprocessed_content']))
-            first_annotated_content = self.annotate(result['preprocessed_content'])
-            logger.info('[ANNOTATOR]\t [%s] First pipeline done', result['url'])
-            
+            first_annotated_content = self.annotate(result['preprocessed_content'], doc_id=result['id'])
             selected_sentences = self.select_sentences(result['preprocessed_content'], relation, first_annotated_content)
-            
-            logger.info('[ANNOTATOR]\t [%s] Annotating %s sentences ... (Second pipeline)', result['url'], len(selected_sentences))
-            second_annotated_content = self.annotate(selected_sentences, pipeline='second_pipeline')
-            logger.info('[ANNOTATOR]\t [%s] Second pipeline done', result['url'])
-            result['annotated_content'] = second_annotated_content # update the doc
-            # logger.info('[ANNOTATOR]\t [%s] %s', result['url'], second_annotated_content.tree_as_string())
+            second_annotated_content = self.annotate(selected_sentences, pipeline='second_pipeline', doc_id=result['id'])
+            # result['annotated_content'] = second_annotated_content # update the doc
+            return second_annotated_content
         else:
             logger.info('[ANNOTATOR]\t [%s] No content, skipping...', result['url'])
-    
+
     def annotate_results(self, results, relation):
         """
         Args:
@@ -84,11 +82,18 @@ class Annotator:
         Given a list of results from the google query, that have been split into lists of sentences,
         Performs the two CoreNLP pipelines and updates the result dictionnaries with annotated objects
         """
-        # with ThreadPool(processes=10) as pool:
+        # with Pool(processes=4) as pool:
         #     for result in results:
-        #         pool.apply_async(self.run_both_pipelines, args=(result,relation))
+
+        #         def update_annotated_content(annotated_content):
+        #             result['annotated_content'] = annotated_content
+
+        #         pool.apply_async(self.run_both_pipelines, args=(result,relation)) # TODO: add callback
+            
         #     pool.close()
+        #     print('done closing main')
         #     pool.join()
+        #     print('done joining main')
 
         for result in results:
             self.run_both_pipelines(result,relation)
