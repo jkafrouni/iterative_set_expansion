@@ -61,9 +61,9 @@ def main(is_test=True):
 
     helpers.print_arguments(r, t, q, k)
 
-    X = relation_set.RelationSet(r) # extracted tuples
+    X = relation_set.RelationSet(r, t) # extracted tuples
     annotator = annotate.Annotator()
-    extractor = extract.Extractor(r, t)
+    extractor = extract.Extractor(r)
 
     iteration_number = 0
     while len(X) < k:
@@ -75,17 +75,30 @@ def main(is_test=True):
         results = mock_query_and_scraping.load_query_results(q) # for tests
 
         for result in results:
+            print('Processing: ', result['url'])
+            
             result['preprocessed_content'] = preprocess.split_sentences((result['content']))
+            if not result['preprocessed_content']: # to test
+                print('No content from this website, no relations extracted (Overall: %s)' % (len(X),))
+            
+            annotator.annotate(result, r) # updates result
+            extracted_relations = []
+            if 'annotated_content' in result:
+                extracted_relations = extractor.extract(result['annotated_content'])
+            
+            for extracted_relation in extracted_relations: # TODO: implement append
+                X.add(extracted_relation)
 
-        annotator.annotate_results(results, r) # updates the list of results
-        extracted_tuples = extractor.extract_from_results(results)
+            print('Relations extracted from this website: %s (Overall: %s)' % (len(extracted_relations), len(X)))
+        
+        print('Pruning relations below threshold...')
+        X.prune()
+        print('Number of tuples after pruning: ', len(X))
+        print('================== ALL RELATIONS =================')
+        print(X)
 
-        print(extracted_tuples)
-
-        for extracted_tuple in extracted_tuples:
-            X.add(extracted_tuple)
-
-        print('X : ', X)
+        q = X.generate_new_query()
+        
         break
           
 

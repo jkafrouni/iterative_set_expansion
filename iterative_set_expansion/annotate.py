@@ -56,44 +56,29 @@ class Annotator:
                     sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
         return sentences_with_entities
 
-
-    def annotate(self, text, pipeline='first_pipeline', doc_id=''):
-        print('here ' + str(doc_id))
+    def run_pipeline(self, text, pipeline='first_pipeline', doc_id=''):
+        
         logger.info('[ANNOTATOR]\t [doc %s] Annotating %s sentences ... (%s)', doc_id, len(text), pipeline)
         doc = self.core_client.annotate(text=text, properties=self.properties[pipeline], doc_id=doc_id)
         logger.info('[ANNOTATOR]\t [doc %s] %s done', doc_id, pipeline)
         return doc
 
-    def run_both_pipelines(self, result, relation):
+    def mock_run_pipeline(self, pipeline='second_pipeline', doc_id=''):
+        # to use when doc has already been annotate (ie xml already exists), to test the rest of the project
+        return self.core_client.mock_annotate(doc_id=doc_id)
+
+    def annotate(self, result, relation):
+
         if result['preprocessed_content']:
-            first_annotated_content = self.annotate(result['preprocessed_content'], doc_id=result['id'])
+            first_annotated_content = self.run_pipeline(result['preprocessed_content'], doc_id=result['id'])
             selected_sentences = self.select_sentences(result['preprocessed_content'], relation, first_annotated_content)
-            second_annotated_content = self.annotate(selected_sentences, pipeline='second_pipeline', doc_id=result['id'])
-            # result['annotated_content'] = second_annotated_content # update the doc
-            return second_annotated_content
+            if selected_sentences: # do not run launch the second pipeline if no sentences selected
+                second_annotated_content = self.run_pipeline(selected_sentences, pipeline='second_pipeline', doc_id=result['id'])
+                result['annotated_content'] = second_annotated_content # update the doc
+            else:
+                logger.info('[ANNOTATOR]\t [doc %s] No Entity of required type found, not running second pipeline', result['id'])
         else:
             logger.info('[ANNOTATOR]\t [%s] No content, skipping...', result['url'])
 
-    def annotate_results(self, results, relation):
-        """
-        Args:
-            - results: list of dicts
-            - relation: int from 1 to 4
-        Given a list of results from the google query, that have been split into lists of sentences,
-        Performs the two CoreNLP pipelines and updates the result dictionnaries with annotated objects
-        """
-        # with Pool(processes=4) as pool:
-        #     for result in results:
-
-        #         def update_annotated_content(annotated_content):
-        #             result['annotated_content'] = annotated_content
-
-        #         pool.apply_async(self.run_both_pipelines, args=(result,relation)) # TODO: add callback
-            
-        #     pool.close()
-        #     print('done closing main')
-        #     pool.join()
-        #     print('done joining main')
-
-        for result in results:
-            self.run_both_pipelines(result,relation)
+        # mock test:
+        # result['annotated_content'] = self.mock_run_pipeline(pipeline='second_pipeline', doc_id=result['id'])

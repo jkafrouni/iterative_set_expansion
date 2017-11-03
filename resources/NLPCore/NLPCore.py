@@ -26,7 +26,6 @@ class NLPCoreClient:
 
 	def annotate(self, text, properties, doc_id): # added doc_id
 		filename = 'input_' + str(doc_id) + '.txt' # added filename
-		print(filename)
 		with open(filename, 'w') as t:
 			for x in text:
 				t.write("{}\n".format(x))
@@ -40,12 +39,15 @@ class NLPCoreClient:
 
 		path = "{}/*".format(self.path)
 		args = []
-		print('launching java')
 		try:
-			sp = subprocess.Popen(['java', "-cp", path, "-Xmx2g", "edu.stanford.nlp.pipeline.StanfordCoreNLP", "-props", "props.properties", "-nthreads", "4"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-			print('launched java')
+			sp = subprocess.Popen(['java', "-cp", path, "-Xmx2g", "edu.stanford.nlp.pipeline.StanfordCoreNLP", "-props", "props.properties"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 			sp.wait()
 		except java.lang.OutOfMemoryError:
 			raise("Out of Memory")
 
+		return Document(filename=filename)
+
+	def mock_annotate(self, doc_id):
+		# to use when doc has already been annotate (ie xml already exists), to test the rest of the project
+		filename = 'input_' + str(doc_id) + '.txt'
 		return Document(filename=filename)

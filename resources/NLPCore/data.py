@@ -144,7 +144,7 @@ class Relation:
 			self.probabilities[x.findall('label')[0].text] = x.findall('value')[0].text
 
 	def tree_as_string(self):
-		rough_string = ET.tostring(self.tree.getroo, "utf-8", method="xml")
+		rough_string = ET.tostring(self.tree.getroot, "utf-8", method="xml")
 		reparsed = minidom.parseString(rough_string)
 		return reparsed.toprettyxml(newl='')
 
