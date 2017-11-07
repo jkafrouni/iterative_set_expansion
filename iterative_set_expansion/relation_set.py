@@ -54,7 +54,7 @@ class RelationSet:
         else:
             self.data.loc[len(self.data)] = [self.relation_type, new_confidence, entity_value_1, entity_value_2]
 
-    def prune(self, threshold):
+    def prune(self):
         """Removes relations below threshold"""
         self.data = self.data[self.data['confidence'] > self.threshold]
 
@@ -64,5 +64,12 @@ class RelationSet:
             - has not been used for querying yet
             - has an extraction confidence that is highest among the tuples that have not yet been used for querying
         """
-    #     relations_not_used = df.loc[(df['entity_1'] == ('entity_1',2)[0]) & (df['entity_2'] == ('entity_1','entity_3')[1])
-    # ...: , ['entity_1', 'entity_2']]
+        # quick pandas manipulations to get unused relations:
+        merged = self.data.merge(self.used_queries, indicator=True, how='outer')
+        not_used = merged[merged['_merge'] == 'left_only']
+        best_row = not_used.loc[not_used['confidence'].idxmax()]
+
+        new_query = ' '.join(best_row[['entity_1', 'entity_2']])
+        self.used_queries.loc[len(self.used_queries)] = best_row[['relation_type', 'entity_1', 'entity_2']]
+
+        return new_query

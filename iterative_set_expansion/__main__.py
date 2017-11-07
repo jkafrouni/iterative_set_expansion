@@ -92,15 +92,14 @@ def main(is_test=True):
             print('Relations extracted from this website: %s (Overall: %s)' % (len(extracted_relations), len(X)))
         
         print('Pruning relations below threshold...')
+        
         X.prune()
+        
         print('Number of tuples after pruning: ', len(X))
         print('================== ALL RELATIONS =================')
         print(X)
 
-        q = X.generate_new_query()
-        
-        break
-          
+        q = X.generate_new_query()          
 
 if __name__ == '__main__':
     main()
