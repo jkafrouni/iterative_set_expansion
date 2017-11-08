@@ -23,12 +23,23 @@ class Extractor:
         extracted_relations = []
         for sentence in doc.sentences:
             for relation in sentence.relations:
-                if relation: # TODO: vérifier pq il peut y en avoir des vides !
-                    if set(self.desired_relation['entity_types']) == set([relation.entities[0].type, relation.entities[1].type]):
-                        extracted_relations.append(
-                            {'confidence': float(relation.probabilities[self.desired_relation['key']]),
-                             'entities': {relation.entities[0].type: relation.entities[0].value, 
-                                          relation.entities[1].type: relation.entities[1].value}
-                            }
-                        )
+                # if relation: # TODO: vérifier pq il peut y en avoir des vides !
+                entity_types_correct = set(self.desired_relation['entity_types']) == set([relation.entities[0].type, relation.entities[1].type])
+                if entity_types_correct:
+                    confidence = float(relation.probabilities[self.desired_relation['key']])
+                    entity_type_1, entity_value_1 = relation.entities[0].type, relation.entities[0].value
+                    entity_type_2, entity_value_2 = relation.entities[1].type, relation.entities[1].value
+                    
+                    new_relation = {'confidence': confidence,
+                                    'entities': {entity_type_1: entity_value_1,
+                                                 entity_type_2: entity_value_2}}
+
+                    print('=============== EXTRACTED RELATION ===============')
+                    print('Sentence: ', ' '.join([t.word for t in sentence.tokens]))
+                    print('RelationType: %s | Confidence= %s | EntityType1= %s | EntityValue1= %s | EntityType2= %s | EntityValue2= %s'
+                          % (self.desired_relation['key'], confidence, entity_type_1, entity_value_1, entity_type_2, entity_value_2))
+                    print('============== END OF RELATION DESC ==============')
+
+                    extracted_relations.append(new_relation)
+
         return extracted_relations

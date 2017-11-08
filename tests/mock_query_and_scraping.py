@@ -1,5 +1,7 @@
 import json
+import logging
 
+logger = logging.getLogger('iterative_set_expansion')
 
 def load_query_results(query):
     with open('tests/query_history.json', 'r') as outfile:
@@ -7,8 +9,8 @@ def load_query_results(query):
             saved_queries = json.load(outfile)
             return saved_queries[query]
         except Exception as e:
-            log.error('[TEST]\t Error while loading saved query results:')
-            log.error('[TEST]\t ', e)
+            logger.error('[TEST]\t Error while loading saved query results:')
+            logger.error('[TEST]\t ', e)
             return
 
 def save_query_and_scraping_results(query, documents):

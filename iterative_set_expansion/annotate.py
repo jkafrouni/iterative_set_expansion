@@ -44,16 +44,16 @@ class Annotator:
             # print('\n', i, '\n', sentence.__str__()) # for debug
             if relation == 1:
                 if any(token.ner == 'PERSON' for token in sentence.tokens) and any(token.ner == 'LOCATION' for token in sentence.tokens):
-                    sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
+                    sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 2:
                 if helpers.any_two(token.ner == 'LOCATION' for token in sentence.tokens):
-                    sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
+                    sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 3:
                 if any(token.ner == 'ORGANIZATION' for token in sentence.tokens) and any(token.ner == 'LOCATION' for token in sentence.tokens):
-                    sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
+                    sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 4:
                 if any(token.ner == 'ORGANIZATION' for token in sentence.tokens) and any(token.ner == 'PERSON' for token in sentence.tokens):
-                    sentences_with_entities.append([' '.join([t.word for t in sentence.tokens])])
+                    sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
         return sentences_with_entities
 
     def run_pipeline(self, text, pipeline='first_pipeline', doc_id=''):

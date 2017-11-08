@@ -70,9 +70,9 @@ def main(is_test=True):
         iteration_number += 1
         print('=========== Iteration: %s - Query: %s ===========' %(iteration_number, q))
 
-        # results = query.query_google(q) # TODO: garder juste les URLs ?
-        # scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
-        results = mock_query_and_scraping.load_query_results(q) # for tests
+        results = query.query_google(q) # TODO: garder juste les URLs ?
+        scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
+        # results = mock_query_and_scraping.load_query_results(q) # for tests
 
         for result in results:
             print('Processing: ', result['url'])
@@ -86,7 +86,7 @@ def main(is_test=True):
             if 'annotated_content' in result:
                 extracted_relations = extractor.extract(result['annotated_content'])
             
-            for extracted_relation in extracted_relations: # TODO: implement append
+            for extracted_relation in extracted_relations:
                 X.add(extracted_relation)
 
             print('Relations extracted from this website: %s (Overall: %s)' % (len(extracted_relations), len(X)))
