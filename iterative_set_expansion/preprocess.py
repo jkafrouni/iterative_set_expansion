@@ -1,5 +1,7 @@
 import nltk
 
+nltk.download('punkt')
+
 def split_sentences(text):
     """
     Given a paragraph in one single string, 

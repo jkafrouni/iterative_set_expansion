@@ -1,4 +1,4 @@
-from pprint import pprint # for tests
+from iterative_set_expansion import helpers
 
 class Extractor:
     
@@ -35,7 +35,7 @@ class Extractor:
                                                  entity_type_2: entity_value_2}}
 
                     print('=============== EXTRACTED RELATION ===============')
-                    print('Sentence: ', ' '.join([t.word for t in sentence.tokens]))
+                    print('Sentence: ', helpers.sentence_to_string(sentence))
                     print('RelationType: %s | Confidence= %s | EntityType1= %s | EntityValue1= %s | EntityType2= %s | EntityValue2= %s'
                           % (self.desired_relation['key'], confidence, entity_type_1, entity_value_1, entity_type_2, entity_value_2))
                     print('============== END OF RELATION DESC ==============')

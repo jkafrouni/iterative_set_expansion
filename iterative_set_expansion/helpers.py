@@ -43,5 +43,11 @@ def print_arguments(r, t, q, k):
     print('# of Tuples \t =', k)
 
 def any_two(iterable):
-    """Similar to the built-in function any except it retains True if and iterable is True (at least) twice (and not only once)"""
+    """Similar to the built-in function any except it retains True if an iterable is True (at least) twice (and not only at least once)"""
     return (len([i for i in iterable if i]) > 1)
+
+def sentence_to_string(sentence):
+    words = [t.word for t in sentence.tokens]
+    words = [w if w != '-LSB-' else '[' for w in words]
+    words = [w if w != '-RSB-' else ']' for w in words]
+    return ' '.join(words)

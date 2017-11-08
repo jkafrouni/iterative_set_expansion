@@ -88,7 +88,7 @@ def main(is_test=True):
             print('Processing: ', result['url'])
             
             result['preprocessed_content'] = preprocess.split_sentences((result['content']))
-            if not result['preprocessed_content']: # to test
+            if not result['preprocessed_content']:
                 print('No content from this website, no relations extracted (Overall: %s)' % (len(X),))
             
             annotator.annotate(result, r) # updates result
@@ -114,7 +114,10 @@ def main(is_test=True):
         q = X.generate_new_query()
         if q is None:
             print('ISE has "stalled", no new query to generate, aborting...')
-            break        
+            return
+
+    if len(X) >= k: # to make sure the loop didn't break for another uncaught reason
+        print('Program has reached %s number of tuples. Shutting down...' % (k,))    
 
 if __name__ == '__main__':
     main()

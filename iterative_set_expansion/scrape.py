@@ -1,7 +1,4 @@
-import urllib.error
-import http.client
 import logging
-import json
 
 from urllib.request import urlopen
 from multiprocessing.dummy import Pool as ThreadPool
@@ -17,7 +14,7 @@ def scrape(url):
     """
     logger.debug('[SCRAPER]\t Loading url: %s', url)
     try:
-        html_page = urlopen(url).read()
+        html_page = urlopen(url, timeout=30).read()
     except Exception as e:
         logger.warning("[SCRAPER]\t Could not load the page for url: %s", url)
         logger.error(e)
@@ -31,6 +28,7 @@ def scrape(url):
     except Exception as e:
         logger.warning("[SCRAPER]\t Could not read the page for url: %s", url)
         logger.error(e)
+        return ''
 
     if not data:
         logger.warning('[SCRAPER]\t No data found for url: %s', url)
@@ -42,9 +40,9 @@ def scrape(url):
 
 def add_url_content(query, documents):
     """
-    Given a list of documents as jsons containing a url field,
+    Given a list of documents as dicts containing a url field,
     Tries to scrape the corresponding url and extract the body
-    And if scraping goes well, stores result in a 'content' field in the json
+    And if scraping goes well, stores result in a 'content' field in the dict
     Returns when all urls have been processed
     """
     def scrape_and_update(doc):

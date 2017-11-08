@@ -47,6 +47,7 @@ class Annotator:
                     sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 2:
                 if helpers.any_two(token.ner == 'LOCATION' for token in sentence.tokens):
+                # if any(token.ner == 'LOCATION' for token in sentence.tokens):
                     sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 3:
                 if any(token.ner == 'ORGANIZATION' for token in sentence.tokens) and any(token.ner == 'LOCATION' for token in sentence.tokens):
