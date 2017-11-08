@@ -38,10 +38,6 @@ class RelationSet:
         entity_value_1 = relation['entities'][self.entity_type_1]
         entity_value_2 = relation['entities'][self.entity_type_2]
         new_confidence = relation['confidence']
-        # print('=============== EXTRACTED RELATION ===============')
-        # print('Sentence: TODO')
-        # print('RelationType: %s | Confidence= %s | EntityType1= %s | EntityValue1= %s | EntityType2= %s | EntityValue2= %s' % (self.relation_type, new_confidence, self.entity_type_1, entity_value_1, self.entity_type_2, entity_value_2))
-        # print('============== END OF RELATION DESC ==============')
 
         # TODO: validate type (before ?) + validate confidence here = better
         if ((self.data['entity_1'] == entity_value_1) & (self.data['entity_2'] == entity_value_2)).any():

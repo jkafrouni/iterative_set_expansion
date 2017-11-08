@@ -21,17 +21,21 @@ def scrape(url):
     except (http.client.IncompleteRead, urllib.error.URLError):
         logger.warning("[SCRAPER]\t Could not read the page for url: %s", url)
         return ''
-    logger.debug('[SCRAPER]\t Parsing with BS')
-    soup = BeautifulSoup(html_page, 'html5lib')
-    data = soup.findAll('p')
-    data = [p.get_text().replace('\n', '').replace('\t','') for p in data]
-
-    if not data:
-        logger.warning('[SCRAPER]\t No data found for url: %s', url)
+    except Exception:
+        logger.warning("[SCRAPER]\t Unidentified error for url: %s", url)
+        return ''
     else:
-        logger.debug('[SCRAPER]\t [%s]: \n %s', url, data)
+        logger.debug('[SCRAPER]\t Parsing with BS')
+        soup = BeautifulSoup(html_page, 'html5lib')
+        data = soup.findAll('p')
+        data = [p.get_text().replace('\n', '').replace('\t','') for p in data]
 
-    return ' '.join(data) if data else ''
+        if not data:
+            logger.warning('[SCRAPER]\t No data found for url: %s', url)
+        else:
+            logger.debug('[SCRAPER]\t [%s]: \n %s', url, data)
+
+        return ' '.join(data) if data else ''
 
 
 def add_url_content(query, documents):
