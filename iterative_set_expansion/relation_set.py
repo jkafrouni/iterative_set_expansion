@@ -22,6 +22,7 @@ class RelationSet:
         self.used_queries = pd.DataFrame(columns=['relation_type', 'entity_1', 'entity_2']) # TODO: how to deal with first query ?
 
     def __repr__(self):
+        self.data.sort_values(by='confidence', ascending=False, inplace=True) # sort X by confidence before printing
         return self.data.__str__()
 
     def __len__(self):

@@ -83,6 +83,7 @@ def main(is_test=True):
         scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
         # results = mock_query_and_scraping.load_query_results(q) # for tests
 
+        number_of_extracted_relations = 0
         for result in results:
             print('Processing: ', result['url'])
             
@@ -98,7 +99,9 @@ def main(is_test=True):
             for extracted_relation in extracted_relations:
                 X.add(extracted_relation)
 
-            print('Relations extracted from this website: %s (Overall: %s)' % (len(extracted_relations), len(X)))
+            number_of_extracted_relations += len(extracted_relations)
+            print('Relations extracted from this website: %s (Overall: %s)' % (len(extracted_relations), number_of_extracted_relations))
+            # we're not using len(X) because X.add deals with duplicate but reference implementation prints total number of relations
         
         print('Pruning relations below threshold...')
         
