@@ -26,9 +26,13 @@ def scrape(url):
         return ''
     else:
         logger.debug('[SCRAPER]\t Parsing with BS')
+        print('here')
         soup = BeautifulSoup(html_page, 'html5lib')
+        print('there')
         data = soup.findAll('p')
+        print('there 2')
         data = [p.get_text().replace('\n', '').replace('\t','') for p in data]
+        print('there 3')
 
         if not data:
             logger.warning('[SCRAPER]\t No data found for url: %s', url)
