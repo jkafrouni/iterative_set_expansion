@@ -63,6 +63,9 @@ class RelationSet:
         # quick pandas manipulations to get unused relations:
         merged = self.data.merge(self.used_queries, indicator=True, how='outer')
         not_used = merged[merged['_merge'] == 'left_only']
+        if not_used.empty:
+            return None
+
         best_row = not_used.loc[not_used['confidence'].idxmax()]
 
         new_query = ' '.join(best_row[['entity_1', 'entity_2']])

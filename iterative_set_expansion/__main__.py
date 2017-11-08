@@ -65,12 +65,21 @@ def main(is_test=True):
     annotator = annotate.Annotator()
     extractor = extract.Extractor(r)
 
+    already_seen_urls = []
+
     iteration_number = 0
     while len(X) < k:
         iteration_number += 1
         print('=========== Iteration: %s - Query: %s ===========' %(iteration_number, q))
 
-        results = query.query_google(q) # TODO: garder juste les URLs ?
+        results = query.query_google(q)
+        
+        # filter already seen urls:
+        if any(d['url'] in already_seen_urls for d in results):
+            print('Skipping the following already seen urls: ', [d['url'] for d in results if d['url'] in already_seen_urls])
+            results = [d for d in results if d['url'] not in already_seen_urls]
+            already_seen_urls += [d['url'] for d in results]
+
         scrape.add_url_content(q, results) # add 'content' to each doc in results, which is the scraped content of the webpage
         # results = mock_query_and_scraping.load_query_results(q) # for tests
 
@@ -99,7 +108,10 @@ def main(is_test=True):
         print('================== ALL RELATIONS =================')
         print(X)
 
-        q = X.generate_new_query()          
+        q = X.generate_new_query()
+        if q is None:
+            print('ISE has "stalled", no new query to generate, aborting...')
+            break        
 
 if __name__ == '__main__':
     main()
