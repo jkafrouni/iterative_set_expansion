@@ -12,7 +12,7 @@ class RelationSet:
         # attention: name of Entity is not consistent between NER and RelationExtractor (PEOPLE vs PERSON)
         self.relations = {
             1: {'key': 'Live_In', 'entity_types': ['PEOPLE','LOCATION']},
-            2: {'key': 'Located_In', 'entity_types': ['LOCATION','LOCATION']},
+            2: {'key': 'Located_In', 'entity_types': ['LOCATION_1','LOCATION_2']}, # fix, see extract.py
             3: {'key': 'OrgBased_In', 'entity_types': ['ORGANIZATION','LOCATION']},
             4: {'key': 'Work_For', 'entity_types': ['ORGANIZATION','PEOPLE']}
         }

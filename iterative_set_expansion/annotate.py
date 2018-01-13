@@ -1,8 +1,6 @@
 import logging
 import numpy as np
 
-# from multiprocessing.dummy import Pool as ThreadPool # PB: CANNOT USE MULTITHREADING WITH ONLY ONE JAVA PROCESS
-from multiprocessing import Pool
 from resources.NLPCore.NLPCore import NLPCoreClient
 from config import PATH_TO_CORENLP
 from iterative_set_expansion import helpers
@@ -41,13 +39,11 @@ class Annotator:
         """
         sentences_with_entities = [] # list of sentences which contain the entities needed
         for sentence in doc.sentences:
-            # print('\n', i, '\n', sentence.__str__()) # for debug
             if relation == 1:
                 if any(token.ner == 'PERSON' for token in sentence.tokens) and any(token.ner == 'LOCATION' for token in sentence.tokens):
                     sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 2:
                 if helpers.any_two(token.ner == 'LOCATION' for token in sentence.tokens):
-                # if any(token.ner == 'LOCATION' for token in sentence.tokens):
                     sentences_with_entities.append(' '.join([t.word for t in sentence.tokens]))
             elif relation == 3:
                 if any(token.ner == 'ORGANIZATION' for token in sentence.tokens) and any(token.ner == 'LOCATION' for token in sentence.tokens):
